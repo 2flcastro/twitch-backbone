@@ -1,0 +1,9 @@
+.DS_Store
+/.sass-cache
+mongodb/data/db
+mongodb.log
+npm-debug.log*
+/node_modules
+
+/dist/app.js
+/dist/styles.css
