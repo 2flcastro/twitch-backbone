@@ -1,5 +1,4 @@
-Twitch API - Backbone SPA
-=========================
+# Twitch API - Backbone SPA
 
 This is an SPA that uses the Twitch.tv API to obtain information for a list
 of channels and display this information for the viewer. You will be able to see
@@ -13,8 +12,7 @@ based on streaming status, search for a specific channel from the list, and
 add or remove new channels from the list.
 
 
-Gulp Build:
-----------
+### Gulp Build:
 First step is to build the app files.
 Run the following command to build the CSS and JS files for the app:
 ```
@@ -31,10 +29,9 @@ This watches for changes to any of your files and automatically updates them in
 the `dist` directory.
 
 
-Running the Server
-------------------
+### Running the Server
 To run the Node/Express server:
 ```
 node index.js
 ```
-App should now be running on `localhost:3000`. Default port is 3000. 
+App should now be running on `localhost:3000`. Default port is 3000.

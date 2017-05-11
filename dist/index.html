@@ -7,7 +7,45 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <h1>Twitch streaming channels</h1>
+  <header class="header-content u-clearfix">
+    <div class="header-content__titles js-reload-data" title="Reload channels">
+      <div class="header-content__logo">
+        <!-- Twitch Logo -->
+        <img src="#" alt="Twitch logo">
+      </div>
+      <h1 class="header-content__title">Twitch Channels</h1>
+    </div>
+  </header>
+
+  <!-- Search/Filter Nav -->
+  <div class="search-filter-nav">
+    <div class="search-filter-nav__container u-clearfix">
+      <div class="search__container">
+        <input type="text" class="search-bar" placeholder="Search channels" >
+        <button class="search-btn" type="button" title="Search channels">
+          <!-- image for button -->
+          <img src="#" alt="Search channels" >
+        </button>
+      </div>
+
+      <div class="stream-filters">
+        <div class="filter-choice filter-choice-all filter-choice--active"><h3>All</h3></div>
+        <div class="filter-choice filter-choice-streaming"><h3>Streaming</h3></div>
+        <div class="filter=choice filter-choice-offline"><h3>Offline</h3></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Placeholder for unsuccessful search query -->
+  <div class="no-channels-found">
+    <div class="channel-container"><h3>No channels found...</h3></div>
+  </div>
+
+  <!-- Channels List -->
+  <!-- main app entry point -->
+  <div class="channels-list">
+    
+  </div>
 
   <!-- scripts -->
   <script src="app.js"></script>
