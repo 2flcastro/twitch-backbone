@@ -1,1 +1,14 @@
+/* Base styles */
 @import "base/reset";
+@import "base/variables";
+@import "base/global";
+@import "base/utilities";
+@import "base/typography";
+
+
+/* Components */
+@import "components/buttons.scss";
+@import "components/header-titles";
+@import "components/channel-filters";
+@import "components/search-bar";
+@import "components/channels-list";

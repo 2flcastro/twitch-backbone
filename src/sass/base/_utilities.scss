@@ -1,0 +1,8 @@
+/* Utility-Helper classes for convenience */
+
+/* Basic clearfix implemenation */
+.u-clearfix::after {
+  content: '';
+  clear: both;
+  display: table;
+}

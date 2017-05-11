@@ -4,16 +4,19 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
   <title>Twitch Streaming Channels</title>
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,500,900" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <header class="header-content u-clearfix">
-    <div class="header-content__titles js-reload-data" title="Reload channels">
-      <div class="header-content__logo">
-        <!-- Twitch Logo -->
-        <img src="#" alt="Twitch logo">
+  <header>
+    <div class="header-content u-clearfix">
+      <div class="header-content__titles js-reload-data" title="Reload channels">
+        <div class="header-content__logo">
+          <!-- Twitch Logo -->
+          <img src="#" alt="Twitch logo">
+        </div>
+        <h1 class="header-content__title">Twitch Channels</h1>
       </div>
-      <h1 class="header-content__title">Twitch Channels</h1>
     </div>
   </header>
 
@@ -31,7 +34,7 @@
       <div class="stream-filters">
         <div class="filter-choice filter-choice-all filter-choice--active"><h3>All</h3></div>
         <div class="filter-choice filter-choice-streaming"><h3>Streaming</h3></div>
-        <div class="filter=choice filter-choice-offline"><h3>Offline</h3></div>
+        <div class="filter-choice filter-choice-offline"><h3>Offline</h3></div>
       </div>
     </div>
   </div>
@@ -43,9 +46,7 @@
 
   <!-- Channels List -->
   <!-- main app entry point -->
-  <div class="channels-list">
-    
-  </div>
+  <div class="channels-list"></div>
 
   <!-- scripts -->
   <script src="app.js"></script>

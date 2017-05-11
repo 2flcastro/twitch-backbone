@@ -1,0 +1,11 @@
+/* Sets up global styles for the app */
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #6441A4;
+  font-family: $font-stack;
+  letter-spacing: .4px;
+}

@@ -1,0 +1,23 @@
+/* Styles of header/main titles bar */
+
+header {
+  background-color: $white;
+  padding: 14px;
+}
+
+.header-content {
+  max-width: 640px;
+  margin: 0 auto;
+  clear: both;
+}
+
+.header-content__titles {
+  float: left;
+  cursor: pointer;
+}
+
+.header-content__title, .header-content__logo {
+  display: inline-block;
+  margin-right: 10px;
+  vertical-align: middle;
+}
