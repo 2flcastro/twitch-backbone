@@ -16,6 +16,12 @@ header {
   cursor: pointer;
 }
 
+.header-content__logo {
+  width: 35px;
+  height: 35px;
+  background: url("img/twitch-logo.svg") center/100% no-repeat;
+}
+
 .header-content__title, .header-content__logo {
   display: inline-block;
   margin-right: 10px;
