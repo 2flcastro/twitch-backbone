@@ -1,0 +1,32 @@
+{{#if accountClosed}}
+  <div class="channel-profile-block u-clearfix">
+    <div class="channel-profile">
+      <img class="channel-profile__img" src="{{profileImg}}">
+    </div>
+    <div class="channel-titles">
+      <h2 class="channel-titles__title">{{title}}</h2>
+      <h3 class="channel-titles__stream">Account Closed</h3>
+    </div>
+  </div>
+{{else}}
+  <div class="channel-profile-block u-clearfix">
+    <div class="channel-profile">
+      <img class="channel-profile__img" src="{{profileImg}}">
+      <div class="channel-proile__followers"><span>{{followers}} followers</span></div>
+    </div>
+    <div class="channel-titles">
+      <h2 class="channel-titles__title">{{title}}</h2>
+      <h3 class="channel-titles__stream">{{stream}}</h3>
+      {{#if streaming}}
+        <div class="channel-titles__viewers"><span>{{viewers}} viewers</span></div>
+        <a href="{{streamUrl}}" target="_blank"><button class="btn-primary" type="button">Open Stream</button></a>
+      {{else}}
+        <a href="{{channelUrl}}" target="_blank"><button class="btn-primary" type="button">View Channel</a>
+      {{/if}}
+    </div>
+  </div>
+
+  <div class="channel-stream">
+    <a href="{{channelUrl}}" target="_blank"><img class="channel-stream__img" src="{{streamPreview}}"></a>
+  </div>
+{{/if}}
