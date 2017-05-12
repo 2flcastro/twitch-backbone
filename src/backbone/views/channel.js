@@ -3,7 +3,7 @@ var $ = require('jquery'),
     Handlebars = require('handlebars'),
     fs = require('fs');
 
-var template = fs.readFileSync(__dirname + '/../templates/channel.hbs', {encoding: 'utf8'});
+var template = fs.readFileSync(__dirname + '/../templates/channel.hbs', { encoding: 'utf8' });
 
 
 module.exports = Backbone.View.extend({
@@ -11,12 +11,8 @@ module.exports = Backbone.View.extend({
 
   template: Handlebars.compile(template),
 
-  initialize: function() {
-    console.log('initalized channel view');
-  },
-
   render: function() {
-    this.$el.html(this.template(this.channelData));
+    this.$el.html(this.template(this.model.toJSON()));
     return this;
   }
 });

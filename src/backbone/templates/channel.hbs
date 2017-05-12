@@ -16,17 +16,19 @@
     </div>
     <div class="channel-titles">
       <h2 class="channel-titles__title">{{title}}</h2>
-      <h3 class="channel-titles__stream">{{stream}}</h3>
+      <h3 class="channel-titles__stream">{{streamDesc}}</h3>
       {{#if streaming}}
         <div class="channel-titles__viewers"><span>{{viewers}} viewers</span></div>
-        <a href="{{streamUrl}}" target="_blank"><button class="btn-primary" type="button">Open Stream</button></a>
+        <a href="{{channelUrl}}" target="_blank"><button class="btn-primary" type="button">Open Stream</button></a>
       {{else}}
-        <a href="{{channelUrl}}" target="_blank"><button class="btn-primary" type="button">View Channel</a>
+        <a href="{{channelUrl}}" target="_blank"><button class="btn-primary" type="button">View Channel</button></a>
       {{/if}}
     </div>
   </div>
 
+  {{#if streaming}}
   <div class="channel-stream">
     <a href="{{channelUrl}}" target="_blank"><img class="channel-stream__img" src="{{streamPreview}}"></a>
   </div>
+  {{/if}}
 {{/if}}
