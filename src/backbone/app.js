@@ -1,10 +1,8 @@
-var $ = require('jquery'),
-    _ = require('underscore'),
-    Backbone = require('backbone');
+var $ = require('jquery');
+var Backbone = require('backbone');
 
-var ChannelsListView = require('./views/channelsList');
+// var ChannelsListView = require('./views/channelsList');
+var router = require('./routers/router');
 
-
-channelsList = new ChannelsListView();
-channelsList.render();
-channelsList.addChannels();
+// Start the router
+router.start();
