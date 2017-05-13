@@ -1,8 +1,8 @@
 /* Styles for channel "blocks" in channels list */
 
 .channels-list {
-  padding: 0 20px;
-  margin: 25px auto;
+  padding: 24px 20px;
+  margin: 0 auto;
 }
 
 .channel-container {
@@ -11,6 +11,10 @@
   margin: 0 auto;
   margin-bottom: 20px;
   background-color: $black;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
 }
 
 .channel-profile-block {

@@ -5,7 +5,11 @@
 }
 
 body {
-  background-color: $twitch-purple;
+  background-color: $white;
   font-family: $font-stack;
   letter-spacing: .4px;
+}
+
+main {
+  background-color: $twitch-purple;
 }

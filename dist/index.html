@@ -17,30 +17,31 @@
     </div>
   </header>
 
-  <!-- Search/Filter Nav -->
-  <div class="search-filter-nav">
-    <div class="search-filter-nav__container u-clearfix">
-      <div class="search__container">
-        <input type="text" class="search-bar" placeholder="Search channels" >
-        <button class="search-btn" type="button" title="Search channels"></button>
-      </div>
+  <main>
+    <!-- Search/Filter Nav -->
+    <div class="search-filter-nav">
+      <div class="search-filter-nav__container u-clearfix">
+        <div class="search__container">
+          <input type="text" class="search-bar" placeholder="Search channels" >
+          <button class="search-btn" type="button" title="Search channels"></button>
+        </div>
 
-      <div class="stream-filters">
-        <div class="filter-choice filter-choice-all filter-choice--active"><h3>All</h3></div>
-        <div class="filter-choice filter-choice-streaming"><h3>Streaming</h3></div>
-        <div class="filter-choice filter-choice-offline"><h3>Offline</h3></div>
+        <div class="stream-filters">
+          <div class="filter-choice filter-choice-all filter-choice--active"><h3>All</h3></div>
+          <div class="filter-choice filter-choice-streaming"><h3>Streaming</h3></div>
+          <div class="filter-choice filter-choice-offline"><h3>Offline</h3></div>
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- Placeholder for unsuccessful search query -->
-  <div class="no-channels-found">
-    <div class="channel-container"><h3>No channels found...</h3></div>
-  </div>
+    <!-- Placeholder for unsuccessful search query -->
+    <div class="no-channels-found">
+      <div class="channel-container"><h3>No channels found...</h3></div>
+    </div>
 
-  <!-- main app entry point -->
-  <div id="app"></div>
-
+    <!-- main app entry point -->
+    <div id="app"></div>
+  </main>
   <!-- scripts -->
   <script src="app.js"></script>
 </body>
