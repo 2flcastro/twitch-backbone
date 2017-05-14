@@ -3,9 +3,6 @@ var Backbone = require('backbone');
 
 var ChannelsListView = require('../views/channelsList');
 
-// Collection of channels
-var channels = require('../collections/channels');
-
 var Router = Backbone.Router.extend({
   routes: {
     '': 'viewChannels',
@@ -17,9 +14,9 @@ var Router = Backbone.Router.extend({
     console.log('you are now viewing all channels');
 
     var channelsListView = new ChannelsListView();
-    channelsListView.collection = channels;
     $('#app').html(channelsListView.render().el);
 
+    // Set the currentView
     this.currentView = channelsListView;
   },
 

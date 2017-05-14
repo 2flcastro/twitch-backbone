@@ -11,5 +11,7 @@ module.exports = Backbone.Model.extend({
     streamDesc: 'Offline',
     viewers: 0,
     streamPreview: '',
-  }
+  },
+
+  idAttribute: '_id'
 });

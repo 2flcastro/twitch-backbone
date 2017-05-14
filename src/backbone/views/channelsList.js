@@ -3,19 +3,28 @@ var Backbone = require('backbone');
 
 var ChannelView = require('./channel');
 var ChannelModel = require('../models/channel');
+var channels = require('../collections/channels');
 
 module.exports = Backbone.View.extend({
   // Will render a <div> with class "channel-list" as view container
   className: 'channels-list',
 
+  initialize: function() {
+    this.collection = channels;
+
+    // As each channel is added from server, add it to parent view
+    this.listenTo(this.collection, 'add', this.addChannel);
+  },
+
   render: function() {
-    // Create a view for each channel in collection and add to channelList parent view
-    var _this = this;
-    this.collection.each(function(channel) {
-      var channelView = new ChannelView({ model: channel });
-      _this.$el.prepend(channelView.render().el);
-    });
+    // Get list of channels from server
+    this.collection.fetch();
 
     return this;
+  },
+
+  addChannel: function(channel) {
+    var channelView = new ChannelView({ model: channel });
+    this.$el.prepend(channelView.render().el);
   }
 });
