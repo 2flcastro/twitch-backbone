@@ -2,13 +2,14 @@ var Backbone = require('backbone');
 
 module.exports = Backbone.Model.extend({
   defaults: {
-    title: '',
-    accountClosed: false,
-    channelUrl: '',
-    profileImg: '',
+    twitchId: null,
+    name: '',
+    closed: false,
+    url: '',
+    logo: '',
     followers: 0,
     streaming: false,
-    streamDesc: 'Offline',
+    streamDescription: 'Offline',
     viewers: 0,
     streamPreview: '',
   },

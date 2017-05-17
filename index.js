@@ -1,13 +1,11 @@
-var express = require('express'),
-    path = require('path'),
-    morgan = require('morgan'),
-    bodyParser = require('body-parser');
-    cookieParser = require('cookie-parser'),
-    mongoose = require('mongoose'),
-    hbs = require('hbs');
+var express = require('express');
+var path = require('path');
+var morgan = require('morgan');
+var bodyParser = require('body-parser')
+var cookieParser = require('cookie-parser');
+var mongoose = require('mongoose');
+var hbs = require('hbs');
 
-var mainRoutes = require('./routes/main');
-    twitchRoutes = require('./routes/twitch');
 
 var app = express();
 
@@ -34,8 +32,8 @@ app.use(express.static(path.join(__dirname, 'dist')));
 
 
 // Routes setup
-app.use('/', mainRoutes);
-app.use('/twitch-api', twitchRoutes);
+var channelsRoutes = require('./routes/channels');
+app.use('/channels', channelsRoutes);
 
 
 // Catch 404

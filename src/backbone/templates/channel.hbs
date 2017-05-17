@@ -1,34 +1,35 @@
-{{#if accountClosed}}
+{{#if closed}}
   <div class="channel-profile-block u-clearfix">
     <div class="channel-profile">
-      <img class="channel-profile__img" src="{{profileImg}}">
+      <img class="channel-profile__img" src="{{logo}}">
+      <div class="channel-profile__followers"><span>{{followers}} followers</span></div>
     </div>
     <div class="channel-titles">
-      <h2 class="channel-titles__title">{{title}}</h2>
+      <h2 class="channel-titles__title">{{name}}</h2>
       <h3 class="channel-titles__stream">Account Closed</h3>
     </div>
   </div>
 {{else}}
   <div class="channel-profile-block u-clearfix">
     <div class="channel-profile">
-      <img class="channel-profile__img" src="{{profileImg}}">
+      <img class="channel-profile__img" src="{{logo}}">
       <div class="channel-profile__followers"><span>{{followers}} followers</span></div>
     </div>
     <div class="channel-titles">
-      <h2 class="channel-titles__title">{{title}}</h2>
-      <h3 class="channel-titles__stream">{{streamDesc}}</h3>
+      <h2 class="channel-titles__title">{{name}}</h2>
+      <h3 class="channel-titles__stream">{{streamDescription}}</h3>
       {{#if streaming}}
         <div class="channel-titles__viewers"><span>{{viewers}} viewers</span></div>
-        <a href="{{channelUrl}}" target="_blank"><button class="btn-primary" type="button">Open Stream</button></a>
+        <a href="{{url}}" target="_blank"><button class="btn-primary" type="button">Open Stream</button></a>
       {{else}}
-        <a href="{{channelUrl}}" target="_blank"><button class="btn-primary" type="button">View Channel</button></a>
+        <a href="{{url}}" target="_blank"><button class="btn-primary" type="button">View Channel</button></a>
       {{/if}}
     </div>
   </div>
 
   {{#if streaming}}
   <div class="channel-stream">
-    <a href="{{channelUrl}}" target="_blank"><img class="channel-stream__img" src="{{streamPreview}}"></a>
+    <a href="{{url}}" target="_blank"><img class="channel-stream__img" src="{{streamPreview}}"></a>
   </div>
   {{/if}}
 {{/if}}

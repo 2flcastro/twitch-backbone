@@ -3,21 +3,16 @@ var Backbone = require('backbone');
 
 var ChannelView = require('./channel');
 var ChannelModel = require('../models/channel');
-var channels = require('../collections/channels');
 
 module.exports = Backbone.View.extend({
-  // Will render a <div> with class "channel-list" as view container
   className: 'channels-list',
 
   initialize: function() {
-    this.collection = channels;
-
-    // As each channel is added from server, add it to parent view
     this.listenTo(this.collection, 'add', this.addChannel);
+    this.on('remove', function() { this.collection.reset() }, this);
   },
 
   render: function() {
-    // Get list of channels from server
     this.collection.fetch();
 
     return this;
@@ -25,6 +20,6 @@ module.exports = Backbone.View.extend({
 
   addChannel: function(channel) {
     var channelView = new ChannelView({ model: channel });
-    this.$el.prepend(channelView.render().el);
+    this.$el.append(channelView.render().el);
   }
 });

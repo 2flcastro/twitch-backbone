@@ -1,7 +1,7 @@
-var $ = require('jquery'),
-    Backbone = require('backbone'),
-    Handlebars = require('handlebars'),
-    fs = require('fs');
+var $ = require('jquery');
+var Backbone = require('backbone');
+var Handlebars = require('handlebars');
+var fs = require('fs');
 
 var template = fs.readFileSync(__dirname + '/../templates/channel.hbs', { encoding: 'utf8' });
 
