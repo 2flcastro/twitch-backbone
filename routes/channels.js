@@ -1,34 +1,53 @@
 var express = require('express');
-var router = express.Router();
 var https = require('https');
 var twitchID = require('../credentials').twitch.clientID;
 
-router.get('/channels-list', function(request, response) {
-  // Get list of channels from database
+var router = express.Router();
+
+router.get('/channels-list', function(req, res) {
+  // Get channels and streaming data from Twitch API
+  getTwitchData().then(function(data) {
+    res.json(data);
+  }).catch(function(err) {
+    console.error('There was an error getting data from Twitch API: \n', err);
+  });
+});
+
+/*
+  This Express route uses several functions to collect and assemble data
+  from the Twitch API:
+  1. getChannelList() - retrieves the list of channels from the database based
+     on the current user.
+  2. getchannelIds() - uses the list of channels to obtain the Twitch ID
+     associated with each channel.
+  3. getChannelData() - uses the list of channels and the channel IDs to
+     retrieve channel specific data for each channel.
+  4. getChannelStream() - uses the list of channels and channel IDs to
+     retrieve streaming data for each channel.
+  5. getTwitchData() - is responsible for calling the above functions to make
+     the API calls, extract the relevant data after each call, and assembles the
+     data for all channels that is sent back to the client.
+*/
+
+function getChannelList() {
+  // Gets a list of channels from database based on user
   // ...
-  var channels = ["ESL_SC2", "OgamingSC2", "cretetion", "freecodecamp",
+
+  // For development purposes, just return a dummy list of Twitch channels...
+  return ["ESL_SC2", "OgamingSC2", "cretetion", "freecodecamp",
     "storbeck", "habathcx", "RobotCaleb", "noobs2ninjas", "brunofin",
     "comster404", "clwnbaby", "MOONMOON_OW", "12TimeWeCCG", "puncayshun",
-    "1twoQ", "MajinPhil", "bunniemuffin", "EEvisu"];
+    "1twoQ", "MajinPhil", "bunniemuffin", "EEvisu", "DrDisRespectLIVE"];
+}
 
 
-  // Three steps for getting data from Twitch API v5
-  // 1. Acquire ID for each channel via getChannelIds()
-  // 2. Use channel IDs to get channel data via getChannelData()
-  // 3. Use channel IDs to get streaming data via getStreamData()
+function getChannelIds(channels) {
+  // Acqurie channel IDs from Twitch API
 
-  // Creat an array of objects with each channels's data
-  var channelsData = {};
-
-  // Start calls to Twitch API
-  getChannelIds();
-
-  function getChannelIds() {
-    // Keep track of async Twitch API responses
-    var counter = 0;
-
-    // Gather channels' data from Twitch API
-    channels.forEach(function(channel) {
+  // Create an array of promises, one for each channel, to be used later
+  // with Promise.all()
+  var promises = channels.map(function(channel) {
+    return new Promise(function(resolve, reject) {
       var idsReq = https.request({
         hostname: 'api.twitch.tv',
         path: '/kraken/users?login=' + channel,
@@ -38,38 +57,35 @@ router.get('/channels-list', function(request, response) {
           'Client-ID': twitchID
         }
       }, function(res) {
-        // console.log('statusCode: ', res.statusCode);
-        // console.log('headers: ', res.headers);
-
         var data = '';
         res.on('data', function(chunk) { data += chunk });
-        res.on('end', function() {
-          data = JSON.parse(data);
-          // Create object for each channel in channelsData
-          channelsData[channel] = {};
-          channelsData[channel].twitchId = data.users.length ? data.users[0]._id : null;
-          channelsData[channel].closed = data._total ? false : true;
-
-          counter++;
-
-          // Once all ids have been obtained gather channel data via getChannelData()
-          if (counter === channels.length) {
-            getChannelData();
-          }
-
-        });
+        res.on('end', function() { resolve(JSON.parse(data)); });
       });
 
-      idsReq.on('error', function(e) { console.error(e) });
+      // If there is an error with API call reject the promise
+      idsReq.on('error', function(err) {
+        console.error('Error retrieving channel IDs: \n', err);
+        reject(err);
+      });
       idsReq.end();
     });
-  }
+  });
 
-  function getChannelData() {
-    // Keep track of async Twitch API responses
-    var counter = 0;
+  // Returns a promise through Promise.all()
+  return Promise.all(promises).then(function(channelIds) {
+    return channelIds;
+  }).catch(function(err) {
+    console.error('Error retrieving channel IDs: \n', err);
+  });
+}
 
-    channels.forEach(function(channel) {
+
+function getChannelData(channels, channelsData) {
+  // Acquire channel specific data from Twitch, 'channelsData' argument contains
+  // the necessary channel IDs.
+
+  var promises = channels.map(function(channel) {
+    return new Promise(function(resolve, reject) {
       var channelsReq = https.request({
         hostname: 'api.twitch.tv',
         path: '/kraken/channels/' + channelsData[channel].twitchId,
@@ -79,46 +95,32 @@ router.get('/channels-list', function(request, response) {
           'Client-ID': twitchID
         }
       }, function(res) {
-        // console.log('statusCode: ', res.statusCode);
-        // console.log('headers: ', res.headers);
-
         var data = '';
         res.on('data', function(chunk) { data += chunk });
-        res.on('end', function() {
-          data = JSON.parse(data);
-          // Make sure channel exists
-          if (data.status !== 404) {
-            channelsData[channel].name = data.display_name;
-            channelsData[channel].url = data.url;
-            channelsData[channel].logo = data.logo || 'https://static-cdn.jtvnw.net/jtv_user_pictures/test_channel-profile_image-94a42b3a13c31c02-300x300.png';
-            channelsData[channel].followers = data.followers;
-          } else {
-            // Assuming channel does not exist...
-            channelsData[channel].name = channel;
-            channelsData[channel].url = null;
-            channelsData[channel].logo = 'https://static-cdn.jtvnw.net/jtv_user_pictures/test_channel-profile_image-94a42b3a13c31c02-300x300.png';
-            channelsData[channel].followers = 0;
-          }
-
-          counter++;
-
-          // Once all responses come back, get streaming data via getStreamData()
-          if (counter === channels.length) {
-            getStreamData();
-          }
-        });
+        res.on('end', function() { resolve(JSON.parse(data)); });
       });
 
-      channelsReq.on('error', function(e) { console.error(e) });
+      channelsReq.on('error', function(err) {
+        console.error('Error retrieving channel specific data: \n', err);
+        reject(err)
+      });
       channelsReq.end();
     });
-  }
+  });
 
-  function getStreamData() {
-    // Keep track of async Twitch API responses
-    var counter = 0;
+  return Promise.all(promises).then(function(channelData) {
+    return channelData;
+  }).catch(function(err) {
+    console.error('Error retrieving channel specific data: \n', err);
+  });
+}
 
-    channels.forEach(function(channel) {
+function getStreamData(channels, channelsData) {
+  // Acquire channel streaming data from Twitch, 'channelsData' argument
+  // contains the necessary channel IDs.
+
+  var promises = channels.map(function(channel) {
+    return new Promise(function(resolve, reject) {
       var streamsReq = https.request({
         hostname: 'api.twitch.tv',
         path: '/kraken/streams/' + channelsData[channel].twitchId,
@@ -128,25 +130,80 @@ router.get('/channels-list', function(request, response) {
           'Client-ID': twitchID
         }
       }, function(res) {
-        // console.log('statusCode: ', res.statusCode);
-        // console.log('headers: ', res.headers);
-
         var data = '';
         res.on('data', function(chunk) { data += chunk });
-        res.on('end', function() {
-          data = JSON.parse(data);
+        res.on('end', function() { resolve(JSON.parse(data)); });
+      });
+
+      streamsReq.on('error', function(err) {
+        console.error('Failed to get stream data: \n', err);
+        reject(err);
+      });
+      streamsReq.end();
+    });
+  });
+
+  // Returns a promise through Promise.all()
+  return Promise.all(promises).then(function(streamData) {
+    return streamData;
+  }).catch(function(err) {
+    console.error('Failed to get stream data: \n', err);
+  });
+}
+
+function getTwitchData(channels) {
+  // Returns returns a promise that when resolved will provide an array of
+  // objects containing data for each channel in 'channels'.
+
+  // Get list of channels from database based on user (WIP)
+  // ...
+  var channels = getChannelList();
+
+  // channelsData is where the data is stored after each round of API calls.
+  var channelsData = {};
+  channels.forEach(function(channel) { channelsData[channel] = {} });
+
+
+  // Returns a promise that will ultimatley resolve with the final set
+  // of data for all channels in the provided list. Data is assembled after
+  // each API call below.
+  return getChannelIds(channels).then(function(data) {
+    channels.forEach(function(channel, index) {
+      channelsData[channel].twitchId = data[index].users.length ? data[index].users[0]._id : null;
+      channelsData[channel].closed = data[index]._total ? false : true;
+    });
+
+    return getChannelData(channels, channelsData).then(function(data) {
+      channels.forEach(function(channel, index) {
+        // Make sure channel exists
+        if (data[index].status !== 404) {
+          channelsData[channel].name = data[index].display_name;
+          channelsData[channel].url = data[index].url;
+          channelsData[channel].logo = data[index].logo || 'https://static-cdn.jtvnw.net/jtv_user_pictures/test_channel-profile_image-94a42b3a13c31c02-300x300.png';
+          channelsData[channel].followers = data[index].followers;
+        } else {
+          // Assuming channel does not exist...
+          channelsData[channel].name = channel;
+          channelsData[channel].url = null;
+          channelsData[channel].logo = 'https://static-cdn.jtvnw.net/jtv_user_pictures/test_channel-profile_image-94a42b3a13c31c02-300x300.png';
+          channelsData[channel].followers = 0;
+        }
+      });
+
+      return getStreamData(channels, channelsData).then(function(data) {
+        channels.forEach(function(channel, index) {
           // For channels with closed accounts
-          if (data.status == 400) {
+          if (data[index].status == 400) {
             channelsData[channel].streaming = null;
             channelsData[channel].streamingDesc = null;
             channelsData[channel].viewers = 0;
             channelsData[channel].streamPreview = null;
-          } else if (data.stream) {
+          } else if (data[index].stream) {
             // If channel is currently streaming set data
             channelsData[channel].streaming = true
-            channelsData[channel].streamDescription = 'Streaming: ' + data.stream.game;
-            channelsData[channel].viewers = data.stream.viewers;
-            channelsData[channel].streamPreview = data.stream.preview.large;
+            channelsData[channel].streamDescription = 'Streaming: ' + data[index].stream.game;
+            channelsData[channel].viewers = data[index].stream.viewers;
+            channelsData[channel].streamPreview = data[index].stream.preview.large;
           } else {
             // Channel is not streaming set default data
             channelsData[channel].streaming = false;
@@ -154,23 +211,23 @@ router.get('/channels-list', function(request, response) {
             channelsData[channel].viewers = 0;
             channelsData[channel].streamPreview = null;
           }
-
-          counter++;
-          if (counter === channels.length) {
-            clientData = [];
-            channels.forEach(function(channel) {
-              clientData.push(channelsData[channel]);
-            });
-            // Send complete channel and streaming data back to client
-            response.json(clientData);
-          }
         });
-      });
 
-      streamsReq.on('error', function(e) { console.error(e) });
-      streamsReq.end();
+        // All data has been assembled at this stage. Transform the data into
+        // an array of objects for client-side use.
+        var finalData = [];
+        channels.forEach(function(channel) { finalData.push(channelsData[channel]) });
+
+        return finalData;
+      }).catch(function(err) {
+        console.error('Failed to get stream data: \n', err);
+      });
+    }).catch(function(err) {
+      console.error('Error retrieving channel specific data: \n', err);
     });
-  }
-});
+  }).catch(function(err) {
+    console.error('Error retrieving channel IDs: \n', err);
+  });
+}
 
 module.exports = router;
