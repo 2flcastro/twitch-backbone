@@ -21,7 +21,7 @@ function getChannelList() {
   // Gets a list of channels from database based on user
   // ...
 
-  // For development purposes, just return a dummy list of Twitch channels...
+  // For development purposes, just return a predefined list of Twitch channels...
   return ["ESL_SC2", "OgamingSC2", "cretetion", "freecodecamp",
     "storbeck", "habathcx", "RobotCaleb", "noobs2ninjas", "brunofin",
     "comster404", "clwnbaby", "MOONMOON_OW", "12TimeWeCCG", "puncayshun",
@@ -30,7 +30,10 @@ function getChannelList() {
 
 
 function getChannelIds(channels) {
-  // Acqurie channel IDs from Twitch API
+  // Acquire channel IDs from Twitch API.
+  // ARGUMENTS
+  // - channels: array containing list of channels
+  // Returns a promise through Promise.all() which resolves with API data.
 
   // Create an array of promises, one for each channel, to be used later
   // with Promise.all()
@@ -69,8 +72,11 @@ function getChannelIds(channels) {
 
 
 function getChannelData(channels, channelsData) {
-  // Acquire channel specific data from Twitch, 'channelsData' argument contains
-  // the necessary channel IDs.
+  // Acquires channel specific data from Twitch API.
+  // ARGUMENTS
+  // - channels: array containing the list of channels
+  // - channelsData: object with channels' info including ids (twitchId)
+  // Returns a promise through Promise.all() which resolves with API data.
 
   var promises = channels.map(function(channel) {
     return new Promise(function(resolve, reject) {
@@ -104,8 +110,11 @@ function getChannelData(channels, channelsData) {
 }
 
 function getStreamData(channels, channelsData) {
-  // Acquire channel streaming data from Twitch, 'channelsData' argument
-  // contains the necessary channel IDs.
+  // Acquires channel streaming data from Twitch API.
+  // ARGUMENTS
+  // - channels: array containing list of channels
+  // - channelsData: object with channels' info including ids (twitchId)
+  // Returns a promise through Promise.all() which resolves with API data.
 
   var promises = channels.map(function(channel) {
     return new Promise(function(resolve, reject) {
@@ -144,8 +153,10 @@ function getTwitchData(channels) {
   // objects containing data for each channel in 'channels'.
 
   // Get list of channels from database based on user (WIP)
-  // ...
-  var channels = getChannelList();
+  // ====> ...
+
+  // To make testing easier, we can use a passed in list of channels instead.
+  var channels = channels || getChannelList();
 
   // channelsData is where the data is stored after each round of API calls.
   var channelsData = {};
@@ -219,10 +230,8 @@ function getTwitchData(channels) {
 }
 
 
-// Express 'channels' routes defined
-var channels = {};
-
-channels.list = function(req, res) {
+// Define route handlers
+function GET_channelList(req, res) {
   // Get channels and streaming data from Twitch API
   getTwitchData().then(function(data) {
     res.json(data);
@@ -231,4 +240,13 @@ channels.list = function(req, res) {
   });
 };
 
-module.exports = channels;
+
+// Expose route handler functions
+exports.list = GET_channelList;
+
+// Expose other functions for testing
+exports.getChannelList = getChannelList;
+exports.getChannelIds = getChannelIds;
+exports.getChannelData = getChannelData;
+exports.getStreamData = getStreamData;
+exports.getTwitchData = getTwitchData;
