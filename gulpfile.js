@@ -34,6 +34,20 @@ gulp.task('bundle', function() {
     .pipe(gulp.dest('./dist'));
 });
 
+gulp.task('bundle-client-tests', function() {
+  var b = browserify({
+    entries: './tests/client/main.js',
+    debug: true,
+    transform: [brfs]
+  });
+
+  return b.bundle()
+    .pipe(source('tests-bundle.js'))
+    .pipe(buffer())
+    .on('error', gulputil.log)
+    .pipe(gulp.dest('./tests/client'));
+});
+
 
 // Gulp main tasks
 gulp.task('build', ['sass', 'bundle']);
@@ -41,4 +55,8 @@ gulp.task('build', ['sass', 'bundle']);
 gulp.task('build:watch', function() {
   gulp.watch('./src/**/*.scss', ['sass']);
   gulp.watch('./src/**/*.js', ['bundle']);
+});
+
+gulp.task('client-tests:watch', function() {
+  gulp.watch('./tests/client/routers/router-test.js', ['bundle-client-tests']);
 });

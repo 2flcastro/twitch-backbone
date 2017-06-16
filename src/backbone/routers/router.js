@@ -6,61 +6,69 @@ var ChannelsCollection = require('../collections/channels');
 
 var Router = Backbone.Router.extend({
   routes: {
-    '': 'viewChannels',
-    'view-channels': 'viewChannels',
-    'search-channels/:query': 'searchChannels',
-    'edit-channels': 'editChannels'
+    '': 'home',
+    'view/channels': 'viewChannels',
+    'search/channels/:query': 'searchChannels',
+    'edit/channels': 'editChannels'
+  },
+
+  home: function() {
+    // Redirect to 'view/channels' route
+    this.navigate('view/channels', { trigger: true });
   },
 
   viewChannels: function() {
-    // Remove previous views
-    if (this.currentView) {
-      this.currentView.trigger('remove');
-      this.currentView.remove();
-    }
+    // Remove previous view
+    this.removeCurrentView();
 
 
-    // Set collection for new view
+    // Create new ChannelsCollection with appropriate url
     var channelsCollection = new ChannelsCollection();
     channelsCollection.url = '/channels/channels-list';
-    // Create new view
+
+    // Create new ChannelsListView and assign instance of ChannelsCollection
     var channelsListView = new ChannelsListView({ collection: channelsCollection });
-    // Render new view
     $('#app').html(channelsListView.render().el);
 
 
-    // Set the currentView for router
+    // Update the router's current view
     this.currentView = channelsListView;
   },
 
   searchChannels: function(query) {
-    if (this.currentView) {
-      this.currentView.trigger('remove');
-      this.currentView.remove();
-    }
-
-    console.log('searched for : ', query);
+    // Remove previous view
+    this.removeCurrentView();
 
     // ...
   },
 
   editChannels: function() {
-    if (this.currentView) {
-      this.currentView.trigger('remove');
-      this.currentView.remove();
-    }
-
-    console.log('you are now editing channels');
+    // Remove previous view
+    this.removeCurrentView();
 
     // ...
   },
 
-  // Keep track of current view to remove when needed
+  // Keep track of current view, defaults to 'null'
   currentView: null,
+
+  removeCurrentView: function() {
+    // Removes the router's current view from DOM
+    if (this.currentView) {
+      this.currentView.trigger('remove');
+      this.currentView.remove();
+      this.currentView = null;
+    }
+  },
 
   start: function() {
     Backbone.history.start();
+  },
+
+  stop: function() {
+    // For unit testing puroses
+    Backbone.history.stop();
   }
 });
 
-module.exports = new Router();
+module.exports = Router;

@@ -4,7 +4,8 @@
   "description": "Backbone SPA using Twitch API",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test:client": "open tests/client/test.html",
+    "test:server": "node tests/server/main.js"
   },
   "author": "Flavio Castro",
   "license": "MIT",
