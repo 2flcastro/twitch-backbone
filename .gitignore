@@ -1,10 +1,9 @@
 credentials.js
-/dist/app.js
-/dist/styles.css
 .DS_Store
+dist
 .env
 mongodb/data/db
 mongodb.log
 npm-debug.log*
-/node_modules
-/.sass-cache
+node_modules
+.sass-cache

@@ -1,39 +1,55 @@
-var gulp = require('gulp'),
-    browserify = require('browserify'),
-    brfs = require('brfs'),
-    sass = require('gulp-sass'),
-    uglify = require('gulp-uglify'),
-    source = require('vinyl-source-stream'),
-    buffer = require('vinyl-buffer'),
-    gulputil = require('gulp-util'),
-    sourcemaps = require('gulp-sourcemaps');
+var gulp = require('gulp');
+var browserify = require('browserify');
+var brfs = require('brfs');
+var source = require('vinyl-source-stream');
+var buffer = require('vinyl-buffer');
+var sourcemaps = require('gulp-sourcemaps');
+var sass = require('gulp-sass');
+var uglify = require('gulp-uglify');
+var gutil = require('gulp-util');
 
-
-gulp.task('sass', function() {
-  return gulp.src('./src/sass/styles.scss')
-    .pipe(sass({outputStyle: 'compressed'}).on('error', sass.logError))
-    .pipe(gulp.dest('./dist'));
+// Copy index files from src to dist
+gulp.task('copy', function() {
+  gulp.src('src/**/*.html')
+    .pipe(gulp.dest('dist'));
 });
 
+// Sass Processing
+gulp.task('sass', function() {
+  return gulp.src('src/sass/main.scss')
+    .pipe(sass({outputStyle: 'compressed'}).on('error', sass.logError))
+    .pipe(gulp.dest('dist'));
+});
 
 // Browserify + brfs transforms for Backbone + Handlebars templates
 gulp.task('bundle', function() {
   var b = browserify({
-    entries: './src/backbone/app.js',
+    entries: 'src/backbone/app.js',
     debug: true,
     transform: [brfs]
   });
 
   return b.bundle()
-    .pipe(source('app.js'))
+    .pipe(source('bundle.js'))
     .pipe(buffer())
     // .pipe(sourcemaps.init({loadMaps: true}))
     // .pipe(uglify())
-    .on('error', gulputil.log)
+    .on('error', gutil.log)
     // .pipe(sourcemaps.write('./'))
-    .pipe(gulp.dest('./dist'));
+    .pipe(gulp.dest('dist'));
 });
 
+// Watch .scss and .js files for changes
+gulp.task('watch', function() {
+  gulp.watch('src/**/*.html', ['copy']);
+  gulp.watch('src/**/*.scss', ['sass']);
+  gulp.watch('src/**/*.js', ['bundle']);
+});
+
+gulp.task('dev', ['copy', 'sass', 'bundle', 'watch']);
+
+
+// client-side unit tests files
 gulp.task('bundle-client-tests', function() {
   var b = browserify({
     entries: './tests/client/main.js',
@@ -44,17 +60,8 @@ gulp.task('bundle-client-tests', function() {
   return b.bundle()
     .pipe(source('tests-bundle.js'))
     .pipe(buffer())
-    .on('error', gulputil.log)
+    .on('error', gutil.log)
     .pipe(gulp.dest('./tests/client'));
-});
-
-
-// Gulp main tasks
-gulp.task('build', ['sass', 'bundle']);
-
-gulp.task('build:watch', function() {
-  gulp.watch('./src/**/*.scss', ['sass']);
-  gulp.watch('./src/**/*.js', ['bundle']);
 });
 
 gulp.task('client-tests:watch', function() {
