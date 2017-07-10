@@ -4,8 +4,10 @@
   "description": "Backbone SPA using Twitch API",
   "main": "index.js",
   "scripts": {
+    "test": "node tests/server/main.js && gulp client-tests:run:auto",
     "test:client": "open tests/client/test.html",
-    "test:server": "node tests/server/main.js"
+    "test:server": "node tests/server/main.js",
+    "postinstall": "echo 'runs after npm insall'"
   },
   "author": "Flavio Castro",
   "license": "MIT",
@@ -26,11 +28,13 @@
     "gulp": "^3.9.1",
     "gulp-sass": "^3.1.0",
     "gulp-sourcemaps": "^2.6.0",
+    "gulp-svgmin": "^1.2.4",
     "gulp-uglify": "^2.1.2",
     "gulp-util": "^3.0.8",
     "morgan": "^1.8.1",
     "sinon": "^2.3.2",
     "tape": "^4.6.3",
+    "tape-run": "^3.0.0",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0"
   }

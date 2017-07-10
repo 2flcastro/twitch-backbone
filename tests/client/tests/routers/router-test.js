@@ -1,9 +1,9 @@
 var test = require('tape');
 var sinon = require('sinon');
 
-var Router = require('../../../src/backbone/routers/router');
-var ChannelsListView = require('../../../src/backbone/views/channelsList');
-var ChannelsCollection = require('../../../src/backbone/collections/channels');
+var Router = require('./../../../../src/backbone/routers/router');
+var ChannelsListView = require('./../../../../src/backbone/views/channelsList');
+var ChannelsCollection = require('./../../../../src/backbone/collections/channels');
 
 
 // BACKBONE ROUTER TESTS

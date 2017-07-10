@@ -25,7 +25,8 @@ function getChannelList() {
   return ["ESL_SC2", "OgamingSC2", "cretetion", "freecodecamp",
     "storbeck", "habathcx", "RobotCaleb", "noobs2ninjas", "brunofin",
     "comster404", "clwnbaby", "MOONMOON_OW", "12TimeWeCCG", "puncayshun",
-    "1twoQ", "MajinPhil", "bunniemuffin", "EEvisu", "DrDisRespectLIVE"];
+    "1twoQ", "MajinPhil", "bunniemuffin", "EEvisu", "DrDisRespectLIVE",
+    "Venis_Gaming", "Elajjaz", "imapi", "xXScreamKiwiXx"];
 }
 
 
@@ -174,25 +175,24 @@ function getTwitchData(channels) {
 
     return getChannelData(channels, channelsData).then(function(data) {
       channels.forEach(function(channel, index) {
-        // Make sure channel exists
-        if (data[index].status !== 404) {
-          channelsData[channel].name = data[index].display_name;
-          channelsData[channel].url = data[index].url;
-          channelsData[channel].logo = data[index].logo || 'https://static-cdn.jtvnw.net/jtv_user_pictures/test_channel-profile_image-94a42b3a13c31c02-300x300.png';
-          channelsData[channel].followers = data[index].followers;
-        } else {
-          // Assuming channel does not exist...
+        // If channel does not exist
+        if (data[index].status === 400 || data[index].status === 404) {
           channelsData[channel].name = channel;
           channelsData[channel].url = null;
           channelsData[channel].logo = 'https://static-cdn.jtvnw.net/jtv_user_pictures/test_channel-profile_image-94a42b3a13c31c02-300x300.png';
           channelsData[channel].followers = 0;
+        } else {
+          channelsData[channel].name = data[index].display_name;
+          channelsData[channel].url = data[index].url;
+          channelsData[channel].logo = data[index].logo || 'https://static-cdn.jtvnw.net/jtv_user_pictures/test_channel-profile_image-94a42b3a13c31c02-300x300.png';
+          channelsData[channel].followers = data[index].followers;
         }
       });
 
       return getStreamData(channels, channelsData).then(function(data) {
         channels.forEach(function(channel, index) {
           // For channels with closed accounts
-          if (data[index].status == 400) {
+          if (data[index].status === 400 || data[index].status === 404) {
             channelsData[channel].streaming = null;
             channelsData[channel].streamingDesc = null;
             channelsData[channel].viewers = 0;
