@@ -139,6 +139,7 @@ gulp.task('client-tests:bundle', function() {
   return bundleStream.bundle()
     .pipe(source('tests-bundle.js'))
     .pipe(buffer())
+    .pipe(uglify())
     .on('error', gutil.log)
     .pipe(gulp.dest('tests/client'));
 });
