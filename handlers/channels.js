@@ -183,6 +183,7 @@ function getTwitchData(channels) {
           channelsData[channel].followers = 0;
         } else {
           channelsData[channel].name = data[index].display_name;
+          channelsData[channel].channelStatus = data[index].status;
           channelsData[channel].url = data[index].url;
           channelsData[channel].logo = data[index].logo || 'https://static-cdn.jtvnw.net/jtv_user_pictures/test_channel-profile_image-94a42b3a13c31c02-300x300.png';
           channelsData[channel].followers = data[index].followers;
@@ -200,7 +201,7 @@ function getTwitchData(channels) {
           } else if (data[index].stream) {
             // If channel is currently streaming set data
             channelsData[channel].streaming = true
-            channelsData[channel].streamDescription = 'Streaming: ' + data[index].stream.game;
+            channelsData[channel].streamDescription = data[index].stream.game;
             channelsData[channel].viewers = data[index].stream.viewers;
             channelsData[channel].streamPreview = data[index].stream.preview.large;
           } else {

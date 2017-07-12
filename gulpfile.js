@@ -72,15 +72,16 @@ gulp.task('sass', function() {
 // Watch .scss and .js files for changes
 gulp.task('watch', function() {
   gulp.watch('src/**/*.html', ['copy:html']);
-  gulp.watch('src/img/**/*', ['copy:img', 'svg-ming']);
+  gulp.watch('src/img/**/*', ['copy:img']);
   gulp.watch('src/**/*.js', ['js:bundle']);
   gulp.watch('src/**/*.scss', ['sass']);
+  gulp.watch('src/**/*.hbs', ['js:bundle']);
 });
 
 
 gulp.task('default', ['html:copy', 'img:copy', 'js:bundle', 'sass']);
 
-gulp.task('dev', ['copy:html', 'copy:img', 'svg-min', 'js:bundle', 'sass', 'watch']);
+gulp.task('dev', ['html:copy', 'img:copy', 'js:bundle', 'sass', 'watch']);
 
 
 // ----------

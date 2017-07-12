@@ -19,6 +19,7 @@
       <h2 class="channel-titles__title">{{name}}</h2>
       <h3 class="channel-titles__stream">{{streamDescription}}</h3>
       {{#if streaming}}
+        <h4 class="channel-titles__status">{{channelStatus}}</h4>
         <div class="channel-titles__viewers"><span>{{viewers}} viewers</span></div>
         <a href="{{url}}" target="_blank"><button class="btn-primary" type="button">Open Stream</button></a>
       {{else}}
