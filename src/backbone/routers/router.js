@@ -2,7 +2,6 @@ var $ = require('jquery');
 var Backbone = require('backbone');
 
 var ChannelsListView = require('../views/channelsList');
-var ChannelsCollection = require('../collections/channels');
 
 var Router = Backbone.Router.extend({
   routes: {
@@ -21,13 +20,8 @@ var Router = Backbone.Router.extend({
     // Remove previous view
     this.removeCurrentView();
 
-
-    // Create new ChannelsCollection with appropriate url
-    var channelsCollection = new ChannelsCollection();
-    channelsCollection.url = '/channels/channels-list';
-
-    // Create new ChannelsListView and assign instance of ChannelsCollection
-    var channelsListView = new ChannelsListView({ collection: channelsCollection });
+    // Create new ChannelsListView and render it
+    var channelsListView = new ChannelsListView();
     $('#app').html(channelsListView.render().el);
 
 
