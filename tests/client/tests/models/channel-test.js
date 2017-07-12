@@ -1,12 +1,12 @@
 var test = require('tape');
-var sinon = require('sinon');
 
-var ChannelModel = require('../../../../src/backbone/models/channel');
+// Channel Model
+var Channel = require('../../../../src/backbone/models/channel');
 
 module.exports = function() {
   test('Channel model has default attributes', function(t) {
     // ARRANGE - create new instance of model
-    var channel = new ChannelModel();
+    var channel = new Channel();
 
     // ASSERT
     t.equal(channel.get('twitchId'), 0, 'Default twitchId is null');
@@ -28,7 +28,7 @@ module.exports = function() {
 
   test('Channel model sets attributes appropriately', function(t) {
     // ARRANGE - create new insteance of channel model with defaults passed in
-    var channel = new ChannelModel({
+    var channel = new Channel({
       twitchId: 123456,
       name: 'Test Channel Name',
       closed: false,
@@ -61,7 +61,7 @@ module.exports = function() {
 
   test('Channel model attributes can be modified', function(t) {
     // ARRANGE
-    var channel = new ChannelModel();
+    var channel = new Channel();
 
     // ACT
     channel.set('name', 'Modified Channel Name');
@@ -75,7 +75,7 @@ module.exports = function() {
 
   test('Channel model validates itself', function(t) {
     // ARRANGE
-    var channel = new ChannelModel();
+    var channel = new Channel();
 
     // ACT + ASSERT
     channel.set('twitchId', -1, { validate: true }); // Trigger validation error
