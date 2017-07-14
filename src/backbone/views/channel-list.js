@@ -13,14 +13,13 @@ module.exports = Backbone.View.extend({
     // Set collection
     this.collection = new ChannelsCollection();
 
-    // Set event listener
+    // Set event listeners
     this.listenTo(this.collection, 'add', this.addChannel);
     this.on('remove', function() { this.collection.reset() }, this);
   },
 
   render: function() {
     this.collection.fetch();
-
     return this;
   },
 

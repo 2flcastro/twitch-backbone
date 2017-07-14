@@ -19,3 +19,6 @@ channelsCollectionTests();
 // channel vIEW
 var channelViewTests = require('./views/channel-test');
 channelViewTests();
+// channelList view
+var channelListViewTests = require('./views/channel-list-test');
+channelListViewTests();
