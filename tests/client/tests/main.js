@@ -13,3 +13,9 @@ channelModelTests();
 // BACKBONE COLLECTIONS TESTS
 var channelsCollectionTests = require('./collections/channels-test');
 channelsCollectionTests();
+
+
+// BACKBONE VIEWS TESTS
+// channel vIEW
+var channelViewTests = require('./views/channel-test');
+channelViewTests();
