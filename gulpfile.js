@@ -138,8 +138,6 @@ gulp.task('client-tests:bundle', function() {
 
   return bundleStream.bundle()
     .pipe(source('tests-bundle.js'))
-    .pipe(buffer())
-    .pipe(uglify())
     .on('error', gutil.log)
     .pipe(gulp.dest('tests/client'));
 });
@@ -147,9 +145,9 @@ gulp.task('client-tests:bundle', function() {
 // Run client tests in browser:
 // Opens browser window, use dev-tools to see tests results
 gulp.task('client-tests:run:browser', ['client-tests:bundle'],function() {
-  exec('open tests/client/index.html', function(err, stdout, stderr) {
-    if (err) { return console.error(err); }
-  });
+  var child = cp.spawn('open', ['tests/client/index.html']);
+  child.stdout.pipe(process.stdout);
+  child.stderr.pipe(process.stderr);
 });
 
 // Automate client-side tests using tape-run and phantom.js
