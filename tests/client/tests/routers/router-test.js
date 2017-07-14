@@ -2,7 +2,7 @@ var test = require('tape');
 var sinon = require('sinon');
 
 var Router = require('./../../../../src/backbone/routers/router');
-var ChannelsListView = require('./../../../../src/backbone/views/channelsList');
+var ChannelsListView = require('./../../../../src/backbone/views/channel-list');
 var ChannelsCollection = require('./../../../../src/backbone/collections/channels');
 
 

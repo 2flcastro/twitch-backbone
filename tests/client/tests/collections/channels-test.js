@@ -5,7 +5,7 @@ var sinon =  require('sinon');
 var Channels = require('../../../../src/backbone/collections/channels');
 
 // channelsList view
-var ChannelsList = require('../../../../src/backbone/views/channelsList');
+var ChannelsList = require('../../../../src/backbone/views/channel-list');
 
 
 module.exports = function() {

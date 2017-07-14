@@ -1,7 +1,7 @@
 var $ = require('jquery');
 var Backbone = require('backbone');
 
-var ChannelsListView = require('../views/channelsList');
+var ChannelsListView = require('../views/channel-list');
 
 var Router = Backbone.Router.extend({
   routes: {
