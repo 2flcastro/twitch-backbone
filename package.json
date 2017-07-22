@@ -4,9 +4,7 @@
   "description": "Backbone SPA using Twitch API",
   "main": "index.js",
   "scripts": {
-    "test": "node tests/server/main.js && gulp client-tests:run:auto",
-    "test:client": "open tests/client/test.html",
-    "test:server": "node tests/server/main.js",
+    "test": "gulp server-tests:run && gulp client-tests:run:auto",
     "postinstall": "echo 'runs after npm insall'"
   },
   "author": "Flavio Castro",

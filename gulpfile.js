@@ -117,6 +117,9 @@ gulp.task('server-tests:run', function() {
   var child = cp.spawn('node', ['tests/server/main.js']);
   child.stdout.pipe(process.stdout);
   child.stderr.pipe(process.stderr);
+  child.on('exit', function(code) {
+    process.exit(code);
+  });
 });
 
 // Watch for changes to server tests files and automaticall run tests
@@ -159,7 +162,11 @@ gulp.task('client-tests:run:auto', function() {
   })
     .bundle()
     .pipe(run({browser: 'phantom'}))
-    // .on('results', console.log)
+    .on('results', function(results) {
+      if (!results.ok) {
+        process.exit(1);
+      }
+    })
     .pipe(process.stdout);
 });
 
