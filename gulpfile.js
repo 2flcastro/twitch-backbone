@@ -3,136 +3,95 @@ var browserify = require('browserify');
 var brfs = require('brfs');
 var source = require('vinyl-source-stream');
 var buffer = require('vinyl-buffer');
-var sourcemaps = require('gulp-sourcemaps');
 var sass = require('gulp-sass');
 var uglify = require('gulp-uglify');
 var svgmin = require('gulp-svgmin');
+var size = require('gulp-size');
 var gutil = require('gulp-util');
 var run = require('tape-run');
 var cp = require('child_process');
 
 
-// -----------
-// GULP TASKS:
-// -----------
-// - 'default': performs the same tasks as 'dev', but will not keep watch over file
-//    changes. Meant as a one step build.
-//
-// - 'dev': meant for development purposes. Will compile all assests from 'src'
-//    directory and into the 'dist' directory for client-side use. Additionaly, it
-//    will keep watching for changes on any files in the 'src' directory and repeat
-//    the process.
+//-----------------------------
+// Gulp - Dev Tasks
+//-----------------------------
+gulp.task('html:copy', copyHTML);
+gulp.task('img:copy', copyImage);
+gulp.task('img:svg-min', ['img:copy'], svgMin); // Will call 'img:copy' task as a dependency
+gulp.task('js:bundle', jsBundle); // Bundle all client scripts
+gulp.task('sass:compile', sassCompile);
+gulp.task('watch', watchFiles);
+gulp.task('dev', ['html:copy', 'img:svg-min', 'js:bundle', 'sass:compile', 'watch']); // Build client assets - main task for continuous development
+gulp.task('default', ['html:copy', 'img:svg-min', 'js:bundle', 'sass:compile']); // Default task simply builds assets into 'dist' directory
 
 
-// Copy index files from src to dist
-gulp.task('html:copy', function() {
-  gulp.src('src/**/*.html')
+//-----------------------------
+// Gulp - Test Tasks
+//-----------------------------
+gulp.task('client-tests:bundle', clientTestsBundle); // Bundle client-side test files
+gulp.task('client-tests:run:browser', ['client-tests:bundle'], clientTestsBrowser); // Run client tests by opening a browser window
+gulp.task('client-tests:run:headless', ['client-tests:bundle'], clientTestsHeadless); // Run client-tests using PhantomJS via tap-run
+gulp.task('client-tests:watch', ['client-tests:run:headless'], clientTestsWatch); // Rerun client tests upon file changes
+gulp.task('server-tests:run', serverTestsRun);
+gulp.task('server-tests:watch', ['server-tests:run'], serverTestsWatch); // Rerun server tests upon file changes
+gulp.task('run-tests', ['client-tests:run:headless', 'server-tests:run'], runTests); // Run both server and client tests - suitable for CI
+
+
+//-----------------------------
+// Dev Tasks Functions
+//-----------------------------
+function copyHTML() {
+  return gulp.src('src/**/*.html')
     .pipe(gulp.dest('dist'));
-});
+}
 
-// Copy images from src to dist
-gulp.task('img:copy', function() {
-  gulp.src('src/img/**/*')
+function copyImage() {
+  return gulp.src('src/img/*')
     .pipe(gulp.dest('dist/img'));
-});
+}
 
-// // Minify SVG files, will run 'copy:img' first
-// gulp.task('img:svg', ['img:copy'], function() {
-//   gulp.src('src/img/**/*.svg')
-//     .pipe(svgmin())
-//     .pipe(gulp.dest('dist/img'));
-// });
+function svgMin() {
+  return gulp.src('src/img/**/*.svg')
+    .pipe(svgmin())
+    .pipe(gulp.dest('dist/img'));
+}
 
-
-// Browserify + brfs transforms for Backbone + Handlebars templates
-gulp.task('js:bundle', function() {
+function jsBundle() {
   var bundleStream = browserify({
     entries: 'src/backbone/app.js',
-    debug: true,
-    transform: [brfs]
+    debug: true, // enable source maps
+    transform: [brfs] // handlebars templates
   });
 
   return bundleStream.bundle()
     .pipe(source('bundle.js'))
     .pipe(buffer())
-    // .pipe(sourcemaps.init({loadMaps: true}))
-    // .pipe(uglify())
+    .pipe(uglify())
+    .pipe(size())
     .on('error', gutil.log)
-    // .pipe(sourcemaps.write('./'))
-    .pipe(gulp.dest('dist'));
-});
+    .pipe(gulp.dest('./dist'));
+}
 
-// Sass Processing
-gulp.task('sass', function() {
+function sassCompile() {
   return gulp.src('src/sass/main.scss')
     .pipe(sass({outputStyle: 'compressed'}).on('error', sass.logError))
     .pipe(gulp.dest('dist'));
-});
+}
 
-// Watch .scss and .js files for changes
-gulp.task('watch', function() {
-  gulp.watch('src/**/*.html', ['copy:html']);
-  gulp.watch('src/img/**/*', ['copy:img']);
+function watchFiles() {
+  gulp.watch('src/**/*.html', ['html:copy']);
+  gulp.watch('src/img/**/*', ['img:svg-min']);
   gulp.watch('src/**/*.js', ['js:bundle']);
-  gulp.watch('src/**/*.scss', ['sass']);
+  gulp.watch('src/**/*.scss', ['sass:compile']);
   gulp.watch('src/**/*.hbs', ['js:bundle']);
-});
+}
 
 
-gulp.task('default', ['html:copy', 'img:copy', 'js:bundle', 'sass']);
-
-gulp.task('dev', ['html:copy', 'img:copy', 'js:bundle', 'sass', 'watch']);
-
-
-// ----------
-// UNIT TESTS
-// ----------
-// Server:
-// -------
-// - 'server-tests:run': will run all server-side related tests.
-//
-// - 'server-tests:watch': will keep track of server-side tests files and re-run the
-//    tests on change. Best use is for dev work on server tests.
-//
-// Client:
-// -------
-// - 'client-tests:bundle': will bundle all client-tests into a single file for use
-//   in browser.
-//
-// - 'client-tests:run:browser': performs the above task and will also open a browser window
-//   where the tests will run.
-//
-// - 'client-tests:run:auto': this will bundle client-tests files and automatically
-//   run the tests in a phantom.js headless browser via the command line. This is the
-//   preferred way of running client-side tests once.
-//
-// - 'client-tests:watch': will watch client-tests files rerun them automatically in
-//   the command line on changes. Will also re-bundle client-tests if browser testing
-//   is needed. Best use if for dev work on client-side tests.
-// ----------------------------------
-
-// Run server-side tests
-gulp.task('server-tests:run', function() {
-  // Use child_process 'spawn' to run main test file
-  var child = cp.spawn('node', ['tests/server/main.js']);
-  child.stdout.pipe(process.stdout);
-  child.stderr.pipe(process.stderr);
-  child.on('exit', function(code) {
-    process.exit(code);
-  });
-});
-
-// Watch for changes to server tests files and automaticall run tests
-gulp.task('server-tests:watch', function() {
-  var child = cp.spawn('node', ['tests/server/main.js']);
-  child.stdout.pipe(process.stdout);
-  child.stderr.pipe(process.stderr);
-
-  gulp.watch('tests/server/**/*.js', ['server-tests:run']);
-});
-
-// Bundle client tests for in-browser testing, produces tests-bundle.js file
-gulp.task('client-tests:bundle', function() {
+//-----------------------------
+// Test Tasks Functions
+//-----------------------------
+function clientTestsBundle() {
+  // Bundle all client-side tests scripts
   var bundleStream = browserify({
     entries: 'tests/client/tests/main.js',
     debug: true,
@@ -143,18 +102,16 @@ gulp.task('client-tests:bundle', function() {
     .pipe(source('tests-bundle.js'))
     .on('error', gutil.log)
     .pipe(gulp.dest('tests/client'));
-});
+}
 
-// Run client tests in browser:
-// Opens browser window, use dev-tools to see tests results
-gulp.task('client-tests:run:browser', ['client-tests:bundle'],function() {
+function clientTestsBrowser() {
+  // Use child process 'spawn' to open HTML file with tests bundle
   var child = cp.spawn('open', ['tests/client/index.html']);
   child.stdout.pipe(process.stdout);
   child.stderr.pipe(process.stderr);
-});
+}
 
-// Automate client-side tests using tape-run and phantom.js
-gulp.task('client-tests:run:auto', function() {
+function clientTestsHeadless() {
   browserify({
     entries: 'tests/client/tests/main.js',
     debug: true,
@@ -163,14 +120,34 @@ gulp.task('client-tests:run:auto', function() {
     .bundle()
     .pipe(run({browser: 'phantom'}))
     .on('results', function(results) {
-      if (!results.ok) {
-        process.exit(1);
-      }
+      results.ok ? process.exitCode = 0 : process.exitCode = 1;
+      console.log('Client Tests Exit Code: ', process.exitCode);
     })
     .pipe(process.stdout);
-});
+}
 
-// Watch for changes on client-side tests and automatically run them
-gulp.task('client-tests:watch', function() {
-  gulp.watch('./tests/client/tests/**/*.js', ['client-tests:bundle', 'client-tests:run:auto']);
-});
+function clientTestsWatch() {
+  gulp.watch('tests/client/tests/**/*.js', ['client-tests:run:headless']);
+}
+
+function serverTestsRun() {
+  // Use child process 'spawn' to run main test file
+  var child = cp.spawn('node', ['tests/server/main.js']);
+  child.stdout.pipe(process.stdout);
+  child.stderr.pipe(process.stderr);
+  child.on('exit', function(code) {
+    process.exitCode = code;
+    console.log('Server Tests Exit Code: ', process.exitCode);
+  });
+}
+
+function serverTestsWatch() {
+  gulp.watch('tests/server/**/*.js', ['server-tests:run']);
+}
+
+function runTests() {
+  // Outputs the exit code after running both client and server tests
+  process.on('exit', function(code) {
+    console.log('\nAll Tests Exit Code: ', code);
+  });
+}
