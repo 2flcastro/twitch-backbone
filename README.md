@@ -40,7 +40,7 @@ changed via process.env.PORT environment variable.
 
 
 ### Running Tests
-There are client and server tests that can be ran through gulp tasks.
+There are client and server tests that can be run through gulp tasks.
 #### Client tests
 To run the client tests use:
 ```
