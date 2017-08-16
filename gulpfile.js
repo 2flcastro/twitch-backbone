@@ -120,8 +120,13 @@ function clientTestsHeadless() {
     .bundle()
     .pipe(run({browser: 'phantom'}))
     .on('results', function(results) {
-      results.ok ? process.exitCode = 0 : process.exitCode = 1;
-      console.log('Client Tests Exit Code: ', process.exitCode);
+      if (!results.ok) {
+        process.exitCode = 1;
+        console.log('Client Tests Exit Code:', process.exitCode);
+      } else {
+        // Will not set process.exitCode to 0 since it can affect server tests own exit code
+        console.log('Client Tests Exit Code: 0');
+      }
     })
     .pipe(process.stdout);
 }
@@ -146,7 +151,6 @@ function serverTestsWatch() {
 }
 
 function runTests() {
-  // Outputs the exit code after running both client and server tests
   process.on('exit', function(code) {
     console.log('\nAll Tests Exit Code: ', code);
   });
