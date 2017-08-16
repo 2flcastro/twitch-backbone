@@ -1,5 +1,5 @@
 var https = require('https');
-var twitchID = require('../credentials').twitch.clientID;
+var twitchID = process.env.TWITCH_ID;
 
 /*
   This Express route uses several functions to collect and assemble data
@@ -26,7 +26,7 @@ function getChannelList() {
     "storbeck", "habathcx", "RobotCaleb", "noobs2ninjas", "brunofin",
     "comster404", "clwnbaby", "MOONMOON_OW", "12TimeWeCCG", "puncayshun",
     "1twoQ", "MajinPhil", "bunniemuffin", "EEvisu", "DrDisRespectLIVE",
-    "Venis_Gaming", "Elajjaz", "imapi", "xXScreamKiwiXx"];
+    "Venis_Gaming", "Elajjaz", "imapi", "xXScreamKiwiXx", "catonmarz", "dunkstream"];
 }
 
 

@@ -5,13 +5,17 @@ var bodyParser = require('body-parser')
 var cookieParser = require('cookie-parser');
 var mongoose = require('mongoose');
 var hbs = require('hbs');
+var dotenv = require('dotenv');
 
+
+// Load environment variables from .env file
+dotenv.config();
 
 var app = express();
 
 // Connect to mongoose
 mongoose.connect(process.env.MONGOLAB_URI || 'mongodb://localhost/twitch-backbone', function(err) {
-  console.error('Failed to connect to mongodb');
+  console.error('Not connect to mongodb');
 });
 mongoose.connection.on('open', function() {
   console.log('Connected to mongodb');
