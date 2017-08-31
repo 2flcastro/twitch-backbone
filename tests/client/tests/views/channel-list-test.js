@@ -17,14 +17,16 @@ module.exports = function() {
     t.end();
   });
 
+
   test('ChannelList view renders properly', function(t) {
     // ARRANGE
-    // Create fake server for future XHR calls
+    // Create fake server for future XHR calls and sinon spies
     var fakeServer = sinon.fakeServer.create();
     fakeServer.respondImmediately = true;
     fakeServer.respondWith('GET', '/channels/channels-list',
       [200, { 'Content-Type': 'application/json' }, JSON.stringify([{ name: 'Fake Channel', twitchId: 1 }])]);
-    // Replace Channels colleciton fetch method with a sinon spy
+
+    sinon.spy(ChannelListView.prototype, 'addChannel');
     sinon.spy(ChannelsCollection.prototype, 'fetch');
 
     // ACT
@@ -35,67 +37,155 @@ module.exports = function() {
     t.equal(channelList.render(), channelList, 'Rendering ChannelList view will return itself')
     // Using DOM Elment API "tagName" and "classList" to find view's element tag and classes
     t.equal(channelList.el.tagName, 'DIV', 'ChannelList view renders with a "div" element');
-    t.ok(channelList.el.classList.contains('channels-list'), 'ChannelList view el has the class "channels-list"');
+    t.ok(channelList.el.classList.contains('channels'), 'ChannelList view el has the class "channels"');
 
-    // Test that collection behaves appropiate on view Rendering
+    // Test that collection behaves appropiate on view redering
     // Since we call the render method twice we have two of the same XHR calls
     t.ok(channelList.collection.fetch.called, 'ChannelList collection\'s fetch method was called when view rendered');
     t.ok(fakeServer.requests.length, 'An XHR request was made');
     t.equal(fakeServer.requests[0].method, 'GET', 'A GET request was made');
     t.equal(fakeServer.requests[0].url, '/channels/channels-list', 'A request to the url /channels/channel-list was made');
+    t.ok(channelList.addChannel.called, 'ChannelList "addChannel" method was called');
+    // An instance of 'Channel' view should be rendered and appened to ChannelList
+    t.equal(channelList.$el.find('.channel-container').length, 1, 'ChannelList contains a nested Channel view');
 
 
     // Replace original XHR construct
     fakeServer.restore();
     // Replace ChannelsCollection fetch method
+    ChannelListView.prototype.addChannel.restore();
     ChannelsCollection.prototype.fetch.restore();
     // End tests
     t.end();
   });
 
-  test('ChannelList addChannel method functions properly', function(t) {
+
+  test('ChannelList "filterChannels" method works properly', function(t) {
     // ARRANGE
-    // Replace Channels colleciton fetch method with a sinon spy
-    sinon.spy(ChannelsCollection.prototype, 'fetch');
-    // Replace ChannelListView addChannel method with sinon spy
-    sinon.spy(ChannelListView.prototype, 'addChannel');
+    // Create a sinon fake server that will return channels that are streaming and offline
+    var fakeServer = sinon.fakeServer.create();
+    fakeServer.respondImmediately = true;
+    fakeServer.respondWith('GET', '/channels/channels-list', [200, { 'Content-Type': 'application/json' },
+      JSON.stringify([
+        { name: 'Channel 1', twitchId: 1, streaming: true },
+        { name: 'Channel 2', twitchId: 3, streaming: false}
+    ])]);
+
+    // Create sinon spy
+    sinon.spy(ChannelListView.prototype, 'filterChannels');
+
 
     // ACT
+    // Create a new instance of ChannelView
     var channelList = new ChannelListView();
-    var channelListCollection = channelList.collection; // Isolate the collection of channelList instance
-    // Add a new model to collection and trigger the 'addChannel' event listener
-    channelListCollection.add({ name: 'Fake Channel', twitchId: 1 });
+    var channelCollection = channelList.collection;
+    channelList.render(); // This will cause collecttion to fetch the fake models
+
+    // Add a "currentFilter" attribute to each model as a way to verify that the
+    // "toggleFilterVisible" event has been triggered and with the correct filter
+    channelCollection.models.forEach(function(model) {
+      model.on('toggleFilterVisible', function(filter) {
+        this.set('currentFilter', filter);
+      }, model);
+    });
+
+    // Make a reference to all models in collection
+    var firstChannel = channelCollection.at(0);
+    var secondChannel = channelCollection.at(1);
+
+    // DOM References for filters
+    var filterAll = channelList.$el.find('.filter-choice-all');
+    var filterStreaming = channelList.$el.find('.filter-choice-streaming');
+    var filterOffline = channelList.$el.find('.filter-choice-offline');
+
 
     // ASSERT
-    t.ok(channelList.addChannel.calledOnce, 'ChannelList "addChannel" method was called');
-    // An instance of Channel view should be rendered and appeneded to ChannelList after addChannel is triggered
-    t.equal(channelList.$el.find('.channel-container').length, 1, 'ChannelList view el should have a child element');
+    filterAll.click(); // Simulate click on the "all" filter
+    t.ok(channelList.filterChannels.calledOnce, 'ChannelList "filterChannels" method is called');
+    t.equal(firstChannel.get('currentFilter'), 'all', 'The "toggleFilterVisible" event is triggered on first channel with a filter of "all"');
+    t.equal(secondChannel.get('currentFilter'), 'all', 'The "toggleFilterVisible" event is triggered on second channel with a filter of "all"');
+
+    filterStreaming.click(); // Simulate click on the "streaming" filter
+    t.ok(channelList.filterChannels.calledTwice, 'ChannelList "filterChannels" method is called');
+    t.equal(firstChannel.get('currentFilter'), 'streaming', 'The "toggleFilterVisible" event is triggered on first channel with a filter of "streaming"');
+    t.equal(secondChannel.get('currentFilter'), 'streaming', 'The "toggleFilterVisible" event is triggered on second channel with a filter of "streaming"');
+
+    filterOffline.click(); // Simulate click on the "offline" filter
+    t.ok(channelList.filterChannels.calledThrice, 'ChannelList "filterChannels" method is called');
+    t.equal(firstChannel.get('currentFilter'), 'offline', 'The "toggleFilterVisible" event is triggered on first channel with a filter of "offline"');
+    t.equal(secondChannel.get('currentFilter'), 'offline', 'The "toggleFilterVisible" event is triggered on second channel with a filter of "offline"');
 
 
-    // Restore sinon spies
-    ChannelsCollection.prototype.fetch.restore();
-    ChannelListView.prototype.addChannel.restore();
-
+    // Replace original XHR construct
+    fakeServer.restore();
+    // Restore sinon spy
+    ChannelListView.prototype.filterChannels.restore();
     t.end();
   });
 
-  test('ChannelList view removes properly', function(t) {
+
+  test('ChannelList view searchChannels method works properly', function(t) {
     // ARRANGE
-    // Replace Channels colleciton reset method with a sinon spy
-    sinon.spy(ChannelsCollection.prototype, 'reset');
+    // Create a sinon fake server that will return channels that are streaming and offline
+    var fakeServer = sinon.fakeServer.create();
+    fakeServer.respondImmediately = true;
+    fakeServer.respondWith('GET', '/channels/channels-list', [200, { 'Content-Type': 'application/json' },
+      JSON.stringify([
+        { name: 'Channel 1' },
+    ])]);
+
+    // Create sinon spy for "searchChannels" method
+    sinon.spy(ChannelListView.prototype, 'searchChannels');
+
 
     // ACT
     var channelList = new ChannelListView();
-    // Trigger a 'remove' event on the view to make the collection reset
-    channelList.trigger('remove');
+    var channelCollection = channelList.collection;
+    channelList.render();
+
+    // Add a "matched" attribute to each model as a way to verify that the
+    // "toggleMatchVisible" event has been triggered and with correct match parameter
+    channelCollection.models.forEach(function(model) {
+      model.on('toggleMatchVisible', function(query) {
+        this.set('matched', query);
+      }, model);
+    });
+
+    // Make reference to model in the collection
+    var firstModel = channelCollection.at(0);
+
+    // DOM references
+    var searchBar = channelList.$el.find('.search-bar');
+    var searchBtn = channelList.$el.find('.search-btn');
+
 
     // ASSERT
-    t.ok(channelList.collection.reset.calledOnce, 'ChannelList resets it\'s collection when removed');
+    searchBar.val('nonMatchingName'); // Set a search query value beforehand
+    searchBar.keyup(); // Simulate keyup event on search bar
+    t.ok(channelList.searchChannels.calledOnce, 'The "searchChannels" method is called on keyup event');
+    t.equal(firstModel.get('matched'), null,  'The "toggleMatchVisible" event is triggered on keyup with non-matching search query');
+
+    // Test search with a matching query
+    searchBar.val('Channel 1'); // Actual "name" attribute of fake model above
+    searchBar.keyup();
+    t.ok(channelList.searchChannels.calledTwice, 'The "searchChannels" method is called once more on keyup event');
+    t.ok(firstModel.get('matched'), 'The "toggleMatchVisible" event is triggred on keyup with a matching search query');
 
 
+    // Test the same search functionality but with click event
+    searchBar.val('nonMatchingName');
+    searchBtn.click(); // Simulate click event on search bar
+    t.equal(firstModel.get('matched'), null,  'The "toggleMatchVisible" event is triggered on click with non-matching search query');
+
+    searchBar.val('Channel 1'); // Actual "name" attribute of fake model above
+    searchBtn.click();
+    t.ok(firstModel.get('matched'), 'The "toggleMatchVisible" event is triggred on click with a matching search query');
+
+
+    // Replace original XHR construct
+    fakeServer.restore();
     // Restore sinon spy
-    ChannelsCollection.prototype.reset.restore();
-
+    ChannelListView.prototype.searchChannels.restore();
     t.end();
   });
 };

@@ -1,8 +1,16 @@
 /* Utility-Helper classes for convenience */
 
 /* Basic clearfix implemenation */
-.u-clearfix::after {
+.u-clearfix:before,
+.u-clearfix:after {
   content: '';
-  clear: both;
   display: table;
+}
+
+.u-clearfix:after {
+  clear: both;
+}
+
+.u-hidden {
+  display: none;
 }

@@ -1,0 +1,140 @@
+/* ====== Search Filter Nav Styles ====== */
+
+.search-filter-nav {
+  background-color: $black;
+}
+
+.search-filter-nav--sticky {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+}
+
+.search-filter-nav__container {
+  position: relative;
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+
+/* ======= Filters ====== */
+$num-filters: 3; /* Number of filters */
+$filter-width: (100/$num-filters) * 1%; /* Calculate even % widths */
+
+.stream-filters {
+  position: relative;
+  width: 50%;
+  background: $black;
+
+  @media screen and (max-width: 600px) {
+    position: static;
+    width: 100%;
+  }
+}
+
+.filter-choice {
+  display: block;
+  float: left;
+  width: $filter-width;
+  padding: 10px;
+  padding-top: 22px;
+  margin: 0;
+  text-align: center;
+  cursor: pointer;
+
+  /* Create a small bar to indicate the active filter */
+  &:last-child {
+    &::after {
+      content: '';
+      position: absolute;
+      display: block;
+      bottom: 0;
+      left: 0;
+      width: $filter-width;
+      height: 3px;
+      background-color: $white;
+      transition: left .5s ease;
+    }
+  }
+}
+
+/* Set the left distance for the ::after bar based on filter child number */
+@for $i from 1 through $num-filters {
+  .filter-choice:nth-child(#{$i}).filter-choice--active ~ .filter-choice:last-child::after {
+    left: ($filter-width * $i) - $filter-width;
+  }
+}
+
+/* Set final filters positioning */
+.filter-choice:last-child.filter-choice--active::after {
+  left: 100% - $filter-width !important;
+}
+
+.filter-choice--active h3,
+.filter-choice:hover h3 {
+  color: $white;
+}
+
+
+
+/* ====== Search ====== */
+.search__container {
+  float: right;
+  padding: 14px;
+  padding-right: 0;
+
+  @media screen and (max-width: 600px) {
+    float: none;
+    width: 100%;
+    padding: 18px 18px 10px;
+  }
+}
+
+.search-bar {
+  width: 260px;
+  height: 30px;
+  padding: 6px 10px;
+  padding-right: 45px;
+  border: none;
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 4px;
+  background-color: $white;
+  color: $black;
+  font-size: 14px;
+  font-family: $font-stack;
+  font-weight: 500;
+  vertical-align: middle;
+
+  @media screen and (max-width: 600px) {
+    float: none;
+    width: 98%;
+  }
+}
+
+.search-bar::placeholder {
+  color: $light-grey;
+  font-weight: 400;
+  vertical-align: middle;
+}
+
+.search-bar:focus {
+  outline: none;
+}
+
+.search-btn {
+  width: 40px;
+  height: 30px;
+  border: none;
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+  margin-left: -40px;
+  background: url("img/search-icon.svg") center no-repeat;
+  background-color: $twitch-purple;
+  vertical-align: middle;
+  cursor: pointer;
+
+  &:hover {
+    background-color: $light-purple;
+  }
+}

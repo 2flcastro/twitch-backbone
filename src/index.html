@@ -10,38 +10,16 @@
 <body>
   <header>
     <div class="header-content u-clearfix">
-      <div class="header-content__titles js-reload-channels" title="Reload channels">
-        <div class="header-content__logo"></div>
-        <h1 class="header-content__title">Twitch Channels</h1>
-      </div>
+      <a href="/#view/channels" alt="View channels" title="View channels">
+        <div class="header-content__titles">
+          <div class="header-content__logo"></div>
+          <h1 class="header-content__title">Twitch Channels</h1>
+        </div>
+      </a>
     </div>
   </header>
 
-  <!-- Search/Filter Nav -->
-  <div class="search-filter-nav">
-    <div class="search-filter-nav__container u-clearfix">
-      <div class="search__container">
-        <input type="text" class="search-bar" placeholder="Search channels" >
-        <button class="search-btn" type="button" title="Search channels"></button>
-      </div>
-
-      <div class="stream-filters">
-        <div class="filter-choice filter-choice-all filter-choice--active"><h3>All</h3></div>
-        <div class="filter-choice filter-choice-streaming"><h3>Streaming</h3></div>
-        <div class="filter-choice filter-choice-offline"><h3>Offline</h3></div>
-      </div>
-    </div>
-  </div>
-
-  <main>
-    <!-- Placeholder for unsuccessful search query -->
-    <div class="no-channels-found">
-      <div class="channel-container"><h3>No channels found...</h3></div>
-    </div>
-
-    <!-- app entry point -->
-    <div id="app"></div>
-  </main>
+  <main id="app"></main>
 
   <!-- scripts -->
   <script src="bundle.js"></script>

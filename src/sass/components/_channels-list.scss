@@ -5,7 +5,7 @@
   margin: 0 auto;
 }
 
-.channel-container {
+.channel-container, .search-results {
   max-width: 640px;
   padding: 18px;
   margin: 0 auto;
@@ -15,6 +15,10 @@
   &:last-child {
     margin-bottom: 0;
   }
+}
+
+.search-results {
+  display: none;
 }
 
 .channel-profile-block {
@@ -59,10 +63,4 @@
 
 .channel-stream__img {
   max-width: 100%;
-}
-
-.no-channels-found {
-  display: none;
-  padding: 0 20px;
-  margin: 25px auto;
 }
