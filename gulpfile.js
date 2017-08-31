@@ -35,8 +35,7 @@ gulp.task('client-tests:watch', ['client-tests:run:headless'], clientTestsWatch)
 gulp.task('server-tests:run', serverTestsRun);
 gulp.task('server-tests:watch', ['server-tests:run'], serverTestsWatch); // Rerun server tests upon file changes
 gulp.task('run-tests', ['client-tests:run:headless', 'server-tests:run'], runTests); // Run both server and client tests - suitable for CI
-gulp.task('run-tests:watch', ['client-tests:watch', 'server-tests:watch']);
-
+gulp.task('run-tests:watch', ['client-tests:watch', 'server-tests:watch'], runTestsWatch); // Watch for changes to src files and test files
 
 //-----------------------------
 // Dev Tasks Functions
@@ -155,4 +154,9 @@ function runTests() {
   process.on('exit', function(code) {
     console.log('\nAll Tests Exit Code: ', code);
   });
+}
+
+function runTestsWatch() {
+  gulp.watch('src/**/*.js', ['client-tests:run:headless']);
+  gulp.watch('express/**/*.js', ['server-tests:run']);
 }

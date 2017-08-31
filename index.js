@@ -38,7 +38,7 @@ app.use(express.static(path.join(__dirname, 'dist')));
 
 
 // Routes setup
-var channelsRoutes = require('./routes/channels');
+var channelsRoutes = require('./express/routes/channels');
 app.use('/channels', channelsRoutes);
 
 

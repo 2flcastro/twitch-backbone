@@ -2,7 +2,7 @@
 // File Location: 'handlers/channels.js'
 
 var test = require('tape');
-var channelsHandler = require('../../../handlers/channels');
+var channelsHandler = require('../../../express/handlers/channels');
 
 // Export all tests as a function to be run on 'main' file
 module.exports = function channelsTests() {
